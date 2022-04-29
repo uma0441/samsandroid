@@ -119,7 +119,7 @@ module.exports = {
                       res.send({ status: true, message: "You are  successfully logged in ",student:student,user : userInfo, token: token });
                   })
                   else
-                  professorModel.findOne({userid:userInfo._id}).populate({path:'classes',populate:{path:"subjects"}}).exec(function(errr, student){
+                  professorModel.findOne({userid:userInfo._id}).populate('userid').populate({path:'classes',populate:{path:"subjects"}}).exec(function(errr, student){
                     res.send({ status: true, message: "You are  successfully logged in ",professor:student,user : userInfo, token: token });
                 })
               } else {
@@ -153,6 +153,10 @@ module.exports = {
 
             User.username = req.body.username ? req.body.username : User.username;
 			User.password = req.body.password ? req.body.password : User.password;
+            User.mobile = req.body.mobile ? req.body.mobile : User.mobile;
+			User.status = req.body.status ? req.body.status : User.status;
+			User.dp = req.body.dp ? req.body.dp : User.dp;
+
 			
             User.save(function (err, User) {
                 if (err) {

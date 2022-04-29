@@ -16,6 +16,21 @@ var UserSchema = new Schema({
         trim: true,
         required: true
        },
+       mobile:{
+           type:String,
+           trim:true,
+           required:false
+       },
+       status:{
+        type:String,
+        trim:true,
+        required:false
+       },
+       dp:{
+        type:String,
+        trim:true,
+        required:false
+       },
        type:{
            type : Number,
            required :true

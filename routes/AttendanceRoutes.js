@@ -11,7 +11,8 @@ router.get('/', AttendanceController.list);
  * GET
  */
 router.get('/:id', AttendanceController.show);
-
+router.get('/student/:id', AttendanceController.getAttendanceByStudent);
+router.post('/filter',AttendanceController.filter);
 /*
  * POST
  */

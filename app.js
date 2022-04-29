@@ -7,6 +7,17 @@ const multer = require('multer');
 //starting mongo db
 require('./util/db');
 
+// const mongoose = require('mongoose');
+// const uri = "mongodb+srv://admin:admin@cluster0.pkb5w.mongodb.net/attendance?retryWrites=true&w=majority";
+// mongoose.connect(uri, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// })
+// .then(() => {
+//   console.log('MongoDB Connected..')
+// })
+// .catch(err => console.log(err))
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/UserRoutes');
 var studentRouter = require('./routes/studentRoutes')
