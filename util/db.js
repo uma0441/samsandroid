@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var dburl= 'mongodb+srv://S545551:Ubm$0441@cluster0.76ifx.mongodb.net/SAMS ANDROID?retryWrites=true&w=majority';
+var dburl= 'mongodb+srv://admin:admin@cluster0.76ifx.mongodb.net/sams?retryWrites=true&w=majority';
 
 // mongoose.set('useCreateIndex', true)
 

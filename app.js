@@ -1,17 +1,23 @@
-var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const multer = require('multer');
+
+//starting mongo db
+require('./util/db');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/UserRoutes');
+var studentRouter = require('./routes/studentRoutes')
+var classRouter = require('./routes/classRoutes');
+var subjectController = require('./routes/subjectRoutes');
+var professorRouter = require('./routes/professorRoutes');
+var AttendanceRouter =  require('./routes/AttendanceRoutes');
+
+
 
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -19,23 +25,63 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const storage = multer.diskStorage({
+  destination: function(req, file, callback) {
+    callback(null, '/src/my-images');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname);
+  }
+});
+const upload = multer({dest: 'uploads/'});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/student',studentRouter);
+app.use('/classes',classRouter);
+app.use('/subjects',subjectController);
+app.use('/prof',professorRouter);
+app.use('/attendance',AttendanceRouter);
 
-// catch 404 and forward to error handler
+
+app.post('/image', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    console.log("No file received");
+    return res.send({ status: false, message: "No file received" });
+  } else {
+    console.log('file received');
+    const host = req.host;
+const filePath = req.protocol + "://" + host + '/' + req.file.path;
+    return res.send({
+      success: true,message:"Upload success", path :filePath})
+  }
+});
+/// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
+  });
+  
+  /// error handlers
+  
+  // development error handler
+  // will print stacktrace
+  if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+      console.log(err);
+        res.status(err.status || 500);
+        res.send({status: false,message: err.message,
+            error: err});
+    });
+  }
+  
+  // production error handler
+  // no stacktraces leaked to user
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.send({status: false,message: err.message,
+        error: {}});
+   
+  });
 module.exports = app;
