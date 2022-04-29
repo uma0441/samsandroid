@@ -15,7 +15,7 @@ module.exports = {
      * UserController.list()
      */
     list: function (req, res) {
-        UserModel.find({status: {$lt: 5 }}).select("-password").
+        UserModel.find().select("-password").
         exec(function (err, users) {
           if (err) {
             res.send({ status: false, message: err });
@@ -92,7 +92,10 @@ module.exports = {
         var user = new UserModel({
             username: req.body.username,
             password: req.body.password,
-            type: req.body.type
+            type: req.body.type,
+            dp:req.body.dp,
+            mobile: req.body.mobile,
+            status:req.body.status
           });
           user.save(function (error) {
             if (error) {
