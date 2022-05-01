@@ -3,20 +3,17 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const multer = require('multer');
+var app = express();
+var router = express.Router();
+
+app.set("view engine", "pug");
+
+router.get("/", (req, res) => {
+  res.render("index");
+});
 
 //starting mongo db
 require('./util/db');
-
-// const mongoose = require('mongoose');
-// const uri = "mongodb+srv://admin:admin@cluster0.pkb5w.mongodb.net/attendance?retryWrites=true&w=majority";
-// mongoose.connect(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-// .then(() => {
-//   console.log('MongoDB Connected..')
-// })
-// .catch(err => console.log(err))
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/UserRoutes');
@@ -25,10 +22,6 @@ var classRouter = require('./routes/classRoutes');
 var subjectController = require('./routes/subjectRoutes');
 var professorRouter = require('./routes/professorRoutes');
 var AttendanceRouter =  require('./routes/AttendanceRoutes');
-
-
-
-var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -95,4 +88,5 @@ app.use(function(req, res, next) {
         error: {}});
    
   });
+
 module.exports = app;
