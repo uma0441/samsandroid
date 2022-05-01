@@ -37,25 +37,31 @@ module.exports = {
         const currentYear = currentDate.getFullYear();
         const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
 
-        studentModel.find({ class: classid }).exec(function (err, students) {
-            students.forEach(element => {
-                var Attendance = new AttendanceModel({
-                    date: dateString,
-                    classid: classid,
-                    subjectid: subjectid,
-                    studentId: element._id,
-                    barcodegeneratedat: barcodegeneratedat,
-                    expiry_time: expiry_time,
-                    status: "Absent"
-                });
-
-                Attendance.save(function (err, Attendance) {
-                });
-
-            });
-            return res.status(201).json({ status: true, message: "Attendance filled.." });
-        }
-        );
+        AttendanceModel.find({ date: dateString, subjectid: subjectid, classid: classid }).exec(function (err, att) {
+            if (att.length > 0)
+                return res.status(201).json({ status: true, message: "Attendance already filled..." });
+                else{
+                    studentModel.find({ class: classid }).exec(function (err, students) {
+                        students.forEach(element => {
+                            var Attendance = new AttendanceModel({
+                                date: dateString,
+                                classid: classid,
+                                subjectid: subjectid,
+                                studentId: element._id,
+                                barcodegeneratedat: barcodegeneratedat,
+                                expiry_time: expiry_time,
+                                status: "Absent"
+                            });
+            
+                            Attendance.save(function (err, Attendance) {
+                            });
+            
+                        });
+                        return res.status(201).json({ status: true, message: "Attendance filled.." });
+                    }
+                    );
+                }
+        });
     },
 
     /**
@@ -157,6 +163,7 @@ module.exports = {
         const dateString = currentDayOfMonth + "-" + (currentMonth + 1) + "-" + currentYear;
         AttendanceModel.findOne({ date: dateString, classid: req.body.classid, subjectid: req.body.subjectid, studentId: req.body.studentId }, function (err, Attendance) {
             if (err) {
+                console.log(err)
                 return res.status(500).json({
                     message: 'Error when getting Attendance',
                     error: err
@@ -164,6 +171,7 @@ module.exports = {
             }
 
             if (!Attendance) {
+                console.log(err)
                 return res.status(404).json({
                     message: 'No such Attendance'
                 });
@@ -172,12 +180,12 @@ module.exports = {
 
             Attendance.save(function (err, Attendance) {
                 if (err) {
+                    console.log(err)
                     return res.status(500).json({
                         message: 'Error when updating Attendance.',
                         error: err
                     });
                 }
-
                 return res.json({ status: true, message: "Attendance updated.." });
             });
         });
@@ -199,7 +207,7 @@ module.exports = {
             return res.status(204).json();
         });
     },
-    getAttendanceByStudent:function (req, res) {
+    getAttendanceByStudent: function (req, res) {
         var id = req.params.id;
 
         AttendanceModel.find({ studentId: id }, function (err, Attendance) {
@@ -219,9 +227,9 @@ module.exports = {
             return res.json(Attendance);
         });
     },
-    filter:function (req, res) {
+    filter: function (req, res) {
         console.log(req.body)
-        AttendanceModel.find(req.body).populate({path:'studentId',populate:{path:"userid"}}).exec(req.body, function (err, Attendance) {
+        AttendanceModel.find(req.body).populate({ path: 'studentId', populate: { path: "userid" } }).exec(req.body, function (err, Attendance) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting Attendance.',
